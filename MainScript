@@ -1,0 +1,158 @@
+import numpy as np
+import PracticeData
+import matplotlib.pyplot as plt
+from sklearn import linear_model
+from sklearn.ensemble import RandomForestClassifier
+
+#set sample size
+sample_size = 200
+
+pd1 = PracticeData.PracticeData()
+pd2 = PracticeData.PracticeData()
+pd1.sample_size = sample_size
+pd2.sample_size = sample_size
+
+#class variable
+pd1.add_class_variable([0])
+pd2.add_class_variable([1])
+
+
+#adding some variables
+pd1.add_normal_variable(5,2)
+pd2.add_normal_variable(3,2.5)
+
+pd1.add_normal_variable(2.5,4)
+pd2.add_normal_variable(4.5,3)
+
+pd1.add_uniform_variable(4,12)
+pd2.add_uniform_variable(0,10)
+
+
+#generating data sets with these variables
+training_data1 = np.asarray(pd1.generate_data_set())
+training_data2 = np.asarray(pd2.generate_data_set())
+
+testing_data1 = np.asarray(pd1.generate_data_set())
+testing_data2 = np.asarray(pd2.generate_data_set())
+
+#combining both training sets into one larger set for actual use
+training_data_all = np.concatenate([training_data1, training_data2], axis=1)
+
+
+
+plt.subplot(3,1,1)
+plt.scatter(training_data1[1],training_data1[2],c="red")
+plt.scatter(training_data2[1],training_data2[2],c="blue")
+plt.xlabel("variable 1")
+plt.ylabel("variable 2")
+
+plt.subplot(3,1,2)
+plt.scatter(training_data1[1],training_data1[3],c="red")
+plt.scatter(training_data2[1],training_data2[3],c="blue")
+plt.xlabel("variable 1")
+plt.ylabel("variable 3")
+
+plt.subplot(3,1,3)
+plt.scatter(training_data1[2],training_data1[3],c="red")
+plt.scatter(training_data2[2],training_data2[3],c="blue")
+plt.xlabel("variable 2")
+plt.ylabel("variable 3")
+plt.tight_layout()
+plt.show()
+
+
+#from sklearn import linear_model
+logistic = linear_model.LogisticRegression()
+logistic.fit(training_data_all[1:4].transpose(), training_data_all[0])
+
+predict_on_1 = logistic.predict(testing_data1[1:4].transpose())
+predict_on_2 = logistic.predict(testing_data2[1:4].transpose())
+
+correct_1 = sample_size - np.sum(predict_on_1)
+correct_2 = np.sum(predict_on_2)
+correct_total = correct_1 + correct_2
+
+print("Logistic Regression")
+print("Classification Success: " + str(correct_total/(2*sample_size)))
+print("Success on class 1: " + str(correct_1/sample_size))
+print("Success on class 2: " + str(correct_2/sample_size))
+    
+
+RFC = RandomForestClassifier(n_estimators=50)
+RFC.fit(training_data_all[1:4].transpose(), training_data_all[0])
+predict_on_1 = RFC.predict(testing_data1[1:4].transpose())
+predict_on_2 = RFC.predict(testing_data2[1:4].transpose())
+
+correct_1 = sample_size - np.sum(predict_on_1)
+correct_2 = np.sum(predict_on_2)
+correct_total = correct_1 + correct_2
+print("")
+print("")
+print("Random Forest Classifier")
+print("Classification Success: " + str(correct_total/(2*sample_size)))
+print("Success on class 1: " + str(correct_1/sample_size))
+print("Success on class 2: " + str(correct_2/sample_size))
+
+
+
+#adding more features to both populations, and rebuilding our data set
+
+print("")
+print("")
+print("Adding More Features")
+print("")
+#extra variables
+pd1.add_normal_variable(1)
+pd2.add_normal_variable(2)
+
+pd1.add_normal_variable(10)
+pd2.add_normal_variable(9)
+
+pd1.add_normal_variable(4)
+pd2.add_normal_variable(5)
+
+pd1.add_uniform_variable(3,5)
+pd2.add_uniform_variable(2,6)
+
+#and now re-generate the data sets to include these new variables (as before)
+#generating data sets with these variables
+training_data1 = np.asarray(pd1.generate_data_set())
+training_data2 = np.asarray(pd2.generate_data_set())
+
+testing_data1 = np.asarray(pd1.generate_data_set())
+testing_data2 = np.asarray(pd2.generate_data_set())
+
+#combining both training sets into one larger set for actual use
+training_data_all = np.concatenate([training_data1, training_data2], axis=1)
+
+
+
+logistic.fit(training_data_all[1:8].transpose(), training_data_all[0])
+
+predict_on_1 = logistic.predict(testing_data1[1:8].transpose())
+predict_on_2 = logistic.predict(testing_data2[1:8].transpose())
+
+correct_1 = sample_size - np.sum(predict_on_1)
+correct_2 = np.sum(predict_on_2)
+correct_total = correct_1 + correct_2
+
+print("Logistic Regression")
+print("Classification Success: " + str(correct_total/(2*sample_size)))
+print("Success on class 1: " + str(correct_1/sample_size))
+print("Success on class 2: " + str(correct_2/sample_size))
+    
+
+RFC = RandomForestClassifier(n_estimators=50)
+RFC.fit(training_data_all[1:8].transpose(), training_data_all[0])
+predict_on_1 = RFC.predict(testing_data1[1:8].transpose())
+predict_on_2 = RFC.predict(testing_data2[1:8].transpose())
+
+correct_1 = sample_size - np.sum(predict_on_1)
+correct_2 = np.sum(predict_on_2)
+correct_total = correct_1 + correct_2
+print("")
+print("")
+print("Random Forest Classifier")
+print("Classification Success: " + str(correct_total/(2*sample_size)))
+print("Success on class 1: " + str(correct_1/sample_size))
+print("Success on class 2: " + str(correct_2/sample_size))
